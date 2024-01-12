@@ -2,3 +2,6 @@ tasks:
   - name: "Install dependencies"
     init: |
       sh -c "$(curl -sSfL https://release.solana.com/v1.17.15/install)"
+    command: |
+      source ~/..bash_profile
+      solana --version
