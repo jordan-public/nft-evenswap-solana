@@ -1,6 +1,4 @@
 tasks:
   - name: "Install dependencies"
     init: |
-      tar jxf solana-release-x86_64-unknown-linux-gnu.tar.bz2
-      cd solana-release/
-      export PATH=$PWD/bin:$PATH
+      sh -c "$(curl -sSfL https://release.solana.com/v1.17.15/install)"
