@@ -1,5 +1,17 @@
 # NFT EvenSwap
 
+## Development environment setup
+
+- Install Visual Studio Code
+- Install Gitpod extension in the above
+- In the browser go to [the Gitpod instance](https://gitpod.io/#github.com/jordan-public/nft-evenswap-solana) to start/open it. It will run very slowly the first time, but then next time around it will be ok.
+
+## Demo
+
+TBD
+
+## Introduction
+
 I got an NFT on my Saga phone, at the time I was at a crypto meetup in NYC, and someone showed me their NFT (every Saga owner got one a few days ago; Saga Monkes - see: https://magiceden.io/marketplace/sagamonkes?status=%22buy_now%22). Anyway mine was smoking a cigarette and he’s was not, but it had a mohawk. He liked mine better, and me наоборот. So I thought of this simple idea we can implement in a couple of days: NFT Even Swap:
 
 - User A deposits an NFT into our contract. User adds other NFT addresses/ids that he likes. The info is stored in his account that we create for him.
