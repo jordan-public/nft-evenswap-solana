@@ -1,12 +1,15 @@
 tasks:
   - name: "Install dependencies"
     init: |
+      echo "Starting installation of Rust" > ~/init-log.txt
+      rustup update
       echo "Starting installation of Solana" > ~/init-log.txt
       sh -c "$(curl -sSfL https://release.solana.com/v1.17.15/install)"
-      echo "Installed Solana" > ~/init-log.txt
+      echo "Starting installation of Anchor" > ~/init-log.txt
       cargo install --git https://github.com/coral-xyz/anchor --tag v0.29.0 anchor-cli --locked
-      echo "Installed Anchor" > ~/init-log.txt
+      echo "Installed" > ~/init-log.txt
     command: |
       source ~/.bash_profile
       solana --version
       anchor --version
+      anchor build
