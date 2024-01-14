@@ -1,3 +1,8 @@
+This branch represents a flawed concept. The list of candidate NFT PDAs does not get used. Instead, only one NFT from the list gets swapped, so there is no need for locking all the PDAs and having to predict the
+on-chain execution using the off-chain client.
+
+This will be refactored to use list of NFT Pubkeys for making an offer, but not executing.
+
 # NFT EvenSwap
 
 ## Development environment setup
