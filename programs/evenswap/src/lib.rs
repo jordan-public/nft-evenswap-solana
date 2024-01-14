@@ -174,6 +174,7 @@ pub struct SwapOffer<'info> {
     #[account(executable)]
     pub program_account: AccountInfo<'info>,
 
+    /// CHECK: This is to access the SPL token program. Why unsafe??? !!!
     pub token_program: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
@@ -204,6 +205,7 @@ pub struct CancelOffer<'info> {
     #[account(executable)]
     pub program_account: AccountInfo<'info>,
 
+    /// CHECK: This is to access the SPL token program. Why unsafe??? !!!
     pub token_program: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
@@ -237,6 +239,7 @@ pub struct Swap<'info> {
     #[account(executable)]
     pub program_account: AccountInfo<'info>,
 
+    /// CHECK: This is to access the SPL token program. Why unsafe??? !!!
     pub token_program: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
