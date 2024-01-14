@@ -3,6 +3,7 @@
         "counterparty",
         "evenswap",
         "lamports",
+        "Monkes",
         "Pubkey"
     ]
 }

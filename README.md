@@ -12,20 +12,57 @@ TBD
 
 ## Introduction
 
-I got an NFT on my Saga phone, at the time I was at a crypto meetup in NYC, and someone showed me their NFT (every Saga owner got one a few days ago; Saga Monkes - see: https://magiceden.io/marketplace/sagamonkes?status=%22buy_now%22). Anyway mine was smoking a cigarette and he’s was not, but it had a mohawk. He liked mine better, and me наоборот. So I thought of this simple idea we can implement in a couple of days: NFT Even Swap:
+I got an NFT on my Saga phone, at the time I was at a crypto meetup in NYC, and someone showed me their NFT (every Saga owner got one a few days ago; Saga Monkes - see: https://magiceden.io/marketplace/sagamonkes?status=%22buy_now%22). Anyway mine was smoking a cigarette and he’s was not, but it had a mohawk. He liked mine better, I liked his. So I thought of this simple idea we can implement in a couple of days: NFT Even Swap:
 
-- User A deposits an NFT into our contract. User adds other NFT addresses/ids that he likes. The info is stored in his account that we create for him.
-- Other (B) users go in and do the same. As soon as there is a match (and BTW it happens as soon as some user enters a new NFT), we execute the swap: A and B swap their matching IDs and they pay us some Lamports.
-- Users can list NFTs that are not (yet) deposited. No problem - as soon as the counterparty realizes that, they can deposit their NFT into our contract and the swap occurs right away.
+## Protocol
+
+Any user interested in swapping his NFT for any NFT in his list of desired NFTs can call:
+```
+swap_offer(my_nft_mint: Pubkey, i_want_nfts: Vec<Pubkey>)
+```
+This call records the offer on-chain, so others can take the offer.
+The NFT with mint ```my_nft_mint``` is deposited into the program's appropriate Token account.
+The caller does not pay for this action, other than the Lamports for the network fees.
+This call will fail in the following cases:
+- The caller does not own the NFT with mint ```my_nft_mint```,
+- The list of desired NFTs with Pubkey-s ```i_want_nfts``` is longer than 10 (this is a consrtaint in the program, and can be changed in the future),
+---
+Any user can cancel an offer by calling:
+```
+cancel_offer(my_nft_mint)
+```
+This call removes the offer to swap the NFT with mint ```my_nft_mint``` previously recorded on-chain.
+The NFT with mint ```my_nft_mint``` is returned to the caller's appropriate Token account.
+The caller does not pay for this action, other than the Lamports for the network fees.
+This call will fail in the following cases:
+- The caller does not own the NFT with mint ```my_nft_mint```,
+- There is no previous offer recorded for swapping the NFT with mint Pubkey ```my_nft_mint```.
+---
+Any user can execute a swap by calling:
+```
+swap(my_nft_mint: Pubkey, other_nft_mint: Pubkey)
+```
+This call swaps the the NFTs as follows:
+- The NFT with mint ```my_nft_mint``` is transferred from the caller's appropriate Token account to the appropriate Token account of the caller who placed the existing offer of his NFT with mint ```other_nft_mint```.
+- The NFT with mint ```other_nft_mint``` is transferred from the program's appropriate Token account to the appropriate Token account of the caller.
+
+The caller pays a Protocol Fee for this action, in addition to the Lamports for the network fees.
+This call will fail in the following cases:
+- The caller does not own the NFT with mint ```my_nft_mint```,
+- There is a previous offer recorded for swapping the NFT with mint Pubkey ```my_nft_mint```.
+- There is no previous offer recorded for swapping the NFT with mint Pubkey ```other_nft_mint```.
+
+## Protocol Fees (future work)
 - Makers pay nothing to list - that’s how we get more listings.
 - Takers pay a small price in SOL.
-- In the future (maybe same week), we can actually list the candidate tokens for sale at Magiceden or similar for a very high price. This would produce visibility or free advertising for our protocol. And if they sell for a crazy price, even better for the user and for Magiceden which would love us, too. For this the listing into Magiceden has to be performed by our contract and not the user themselves, so the contract can pull it back and swap it if needed.
 
-We can whip this up in a day and learn a lot, what do you think? I hope I’m not throwing a wrench in the gear of our previous discussion.
+## Listing (future work)
 
-We can even start swapping NFTs in the same collection. The first version would be calling:
-swap(nyNFT, [i like these NFTs])
+The offers for swapping are listed and displayed in the front end via discovery using [this RPC call](https://solanacookbook.com/guides/get-program-accounts.html#facts).
 
-If any of “i like these NFTs" is in the contract, it will do the swap immediately. If not, it will append them to a list. We can think about efficiency later (like bitmaps for collections etc. - for example Saga MONKES is a limited collection of a few thousand (bits in the bitmap)).
+## Free Advertising (future work)
+In the future (maybe same week), we can actually list the candidate tokens for sale at Magiceden or similar for a very high price. This would produce visibility or free advertising for our protocol. And if they sell for a crazy price, even better for the user and for Magiceden which would love us, too. For this the listing into Magiceden has to be performed by our contract and not the user themselves, so the contract can pull it back and swap it if needed.
 
-I would even try to write the front end on Solana Mobile if we have time.
+## Solana Mobile Front End (future work)
+
+Using React Native and its Solana Mobile integration.
