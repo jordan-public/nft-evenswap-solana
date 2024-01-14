@@ -1,6 +1,8 @@
 tasks:
   - name: "Install dependencies"
     init: |
+      echo "Starting installation of PNPM" > ~/init-log.txt
+      pnpm add -g pnpm
       echo "Starting installation of Rust" > ~/init-log.txt
       rustup update
       echo "Starting installation of Solana" > ~/init-log.txt
@@ -12,4 +14,5 @@ tasks:
       source ~/.bash_profile
       solana --version
       anchor --version
+      pnpm install
       anchor build
