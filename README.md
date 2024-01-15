@@ -6,13 +6,29 @@
 - Install Gitpod extension in the above
 - In the browser go to [the Gitpod instance](https://gitpod.io/#github.com/jordan-public/nft-evenswap-solana) to start/open it. It will run very slowly the first time, but then next time around it will be ok.
 
+##  Build and deploy
+
+At the project root:
+
+```shell
+cargo build
+cd programs/evenswap
+cargo build-bpf
+```
+
+At the project root:
+
+```shell
+solana program deploy target/deploy/evenswap.so
+```
+
 ## Demo
 
 TBD
 
 ## Introduction
 
-I got an NFT on my Saga phone, at the time I was at a crypto meetup in NYC, and someone showed me their NFT (every Saga owner got one a few days ago; Saga Monkes - see: https://magiceden.io/marketplace/sagamonkes?status=%22buy_now%22). Anyway mine was smoking a cigarette and he’s was not, but it had a mohawk. He liked mine better, I liked his. So I thought of this simple idea we can implement in a couple of days: NFT Even Swap:
+I got an NFT on my Saga phone, at the time I was at a crypto meetup in NYC, and someone showed me their NFT (every Saga owner got one a few days ago; Saga Monkes - see: https://magiceden.io/marketplace/sagamonkes?status=%22buy_now%22). Anyway mine was smoking a cigarette and he’s was not, but it had a mohawk. He liked mine better, I liked his. So I thought of this simple idea we can implement in a couple of days: NFT Even Swap.
 
 ## Protocol
 
@@ -42,7 +58,7 @@ Any user can execute a swap by calling:
 ```
 swap(my_nft_mint: Pubkey, other_nft_mint: Pubkey)
 ```
-This call swaps the the NFTs as follows:
+If a previously created offer exists for this NFT, then this call swaps the NFTs as follows:
 - The NFT with mint ```my_nft_mint``` is transferred from the caller's appropriate Token account to the appropriate Token account of the caller who placed the existing offer of his NFT with mint ```other_nft_mint```.
 - The NFT with mint ```other_nft_mint``` is transferred from the program's appropriate Token account to the appropriate Token account of the caller.
 
