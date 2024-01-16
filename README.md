@@ -8,19 +8,32 @@
 
 ##  Build and deploy
 
-At the project root:
-
+To build the project, at the project root run:
 ```shell
-cargo build
-cd programs/evenswap
-cargo build-bpf
+anchor build
 ```
 
-At the project root:
+To test the project, at the project root run:
+```shell
+anchor test
+```
+
+To deploy the project to the local test node, first run the solana test node:
+
+Then, at the project root run:
+```shell
+solana-test-validator
+```
 
 ```shell
 solana program deploy target/deploy/evenswap.so
 ```
+
+To deploy it to devnet, at the project root run:
+```shell
+solana program deploy target/deploy/evenswap.so -u devnet
+```
+
 
 ## Demo
 
