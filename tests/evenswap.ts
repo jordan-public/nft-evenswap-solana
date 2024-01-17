@@ -6,9 +6,9 @@ import { Transaction, PublicKey, SystemProgram } from "@solana/web3.js";
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo, createSetAuthorityInstruction, AuthorityType, getAccount, getMint, Token, TOKEN_PROGRAM_ID, MintLayout } from "@solana/spl-token";
 import { Evenswap } from "../target/types/evenswap";
 
-const PROGRAM_ID = new PublicKey("9ABW8EsLa5Muc5a8aKNvi6TDytHDRd9gwx8RqiF1Vfp7");
+const PROGRAM_ID = new PublicKey("HR1ZNzmJCwUACz69rWDZH9ASRZyEMqXRU3r4ebJzyaRj");
 
-async function createNFT(connection: anchor.Provider.Connection, creator: anchor.web3.Keypair, recipient: andchor.web3.Keypair) {
+async function createNFT(connection: anchor.Provider.Connection, creator: anchor.web3.Keypair, recipient: anchor.web3.Keypair) {
   // Create a new mint
   const mint = await createMint(
     connection,

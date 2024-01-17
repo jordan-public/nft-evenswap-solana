@@ -48,6 +48,8 @@ solana-test-validator
 solana program deploy target/deploy/evenswap.so
 ```
 
+Set the Program Id in 3 files: lib.rs, Anchor.toml, evenswap.ts
+
 To deploy it to devnet, at the project root run:
 ```shell
 solana program deploy target/deploy/evenswap.so -u devnet
@@ -55,6 +57,9 @@ solana program deploy target/deploy/evenswap.so -u devnet
 ---
 
 ## Demo
+
+solana airdrop <AMOUNT> <YOUR_WALLET_ADDRESS> --url http://127.0.0.1:8899
+solana airdrop 5 DTLJmZn4SEpx8xRYcqCTxNEEd6WyjLfctBJuD9qQbjGe --url http://127.0.0.1:8899
 
 TBD
 

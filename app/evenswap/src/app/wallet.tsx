@@ -1,7 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
 import {
     WalletModalProvider,
     WalletDisconnectButton,
@@ -9,7 +8,8 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 import dynamic from 'next/dynamic';
-import {SendSOLToRandomAddress} from "@/app/solana";
+import {CreateNFT} from "@/app/nft";
+import {NFTMinter} from "@/app/nft2";
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -44,7 +44,7 @@ export const Wallet: FC = () => {
              * instantiate its legacy wallet adapter here. Common legacy adapters can be found
              * in the npm package `@solana/wallet-adapter-wallets`.
              */
-            new UnsafeBurnerWalletAdapter(),
+
         ],
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [network]
@@ -58,7 +58,7 @@ export const Wallet: FC = () => {
                     <WalletDisconnectButtonDynamic />
                     { /* Your app's components go here, nested within the context providers. */ }
                     TEST
-
+                    <NFTMinter></NFTMinter>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
