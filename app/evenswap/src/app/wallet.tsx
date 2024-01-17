@@ -8,9 +8,20 @@ import {
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
+import dynamic from 'next/dynamic';
+import {SendSOLToRandomAddress} from "@/app/solana";
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
+
+const WalletDisconnectButtonDynamic = dynamic(
+    async () => (await import('@solana/wallet-adapter-react-ui')).WalletDisconnectButton,
+    { ssr: false }
+);
+const WalletMultiButtonDynamic = dynamic(
+    async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+    { ssr: false }
+);
 
 export const Wallet: FC = () => {
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
@@ -43,9 +54,11 @@ export const Wallet: FC = () => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <WalletMultiButton />
-                    <WalletDisconnectButton />
+                    <WalletMultiButtonDynamic />
+                    <WalletDisconnectButtonDynamic />
                     { /* Your app's components go here, nested within the context providers. */ }
+                    TEST
+
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
