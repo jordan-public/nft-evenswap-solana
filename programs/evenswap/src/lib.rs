@@ -71,21 +71,30 @@ pub mod evenswap {
         // Ensure that the owner of the offer is the one cancelling it
         require!(nft_offer_account.owner == *user.key, ErrorCode::Unauthorized);
 
+        // Transfer NFT to user
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.program_token_account.to_account_info(),
+            to: ctx.accounts.user_token_account.to_account_info(),
+            authority: ctx.accounts.nft_offer_account.to_account_info(),
+        };
+        // Create the PDA account's seeds
+        let my_nft_mint_key = my_nft_mint.key();
+        let seeds = &[
+            b"nft_offer",
+            my_nft_mint_key.as_ref(),
+            &[ctx.bumps.nft_offer_account],
+        ];
+        let signer = &[&seeds[..]];
+        // Complete the transfer
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let program_cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
+        token::transfer(program_cpi_ctx, 1)?; // Transfer the NFT (quantity 1)
+        
         // Close the account and refund the lamports to the user
         // The Anchor framework handles the transfer as specified by `close = user`
         ctx.accounts.nft_offer_account.close(ctx.accounts.user.to_account_info())?;
         // Zero out the account data
         *nft_offer_account.to_account_info().data.borrow_mut() = &mut [];
-        
-        // Transfer NFT to user
-        let cpi_accounts = Transfer {
-            from: ctx.accounts.program_token_account.to_account_info(),
-            to: ctx.accounts.user_token_account.to_account_info(),
-            authority: ctx.accounts.program_account.to_account_info(),
-        };
-        let cpi_program = ctx.accounts.token_program.to_account_info();
-        let program_cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-        token::transfer(program_cpi_ctx, 1)?; // Transfer the NFT (quantity 1)
         
         Ok(())
     }
