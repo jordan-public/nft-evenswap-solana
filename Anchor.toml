@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-evenswap = "8KswSMtEQ9sjHkZ7ogYy1e2wcnntFnCJigNijTFiQEfe"
+evenswap = "9ABW8EsLa5Muc5a8aKNvi6TDytHDRd9gwx8RqiF1Vfp7"
 
 [registry]
 url = "https://api.apr.dev"
