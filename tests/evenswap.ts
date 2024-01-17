@@ -1,6 +1,7 @@
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
+import { expect } from 'chai';
 import { Transaction, PublicKey, SystemProgram } from "@solana/web3.js";
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo, createSetAuthorityInstruction, AuthorityType, getAccount, getMint, Token, TOKEN_PROGRAM_ID, MintLayout } from "@solana/spl-token";
 import { Evenswap } from "../target/types/evenswap";
@@ -278,7 +279,7 @@ describe("evenswap", () => {
     // Check that the swap taker received the NFT
     const accountInfo = await getAccount(provider.connection, received_token_account);
     // Require that the account has 1 token
-    //expect(accountInfo.amount).toEqual(1);
+    expect(accountInfo.amount).to.equal(1n);
   });
 
   // Add more tests as needed
