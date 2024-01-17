@@ -1,8 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
-//use anchor_lang::solana_program::program_pack::Pack;
 use anchor_lang::solana_program::account_info::AccountInfo;
-//use anchor_lang::AccountsExit;
 use anchor_spl::token::TokenAccount;
 use anchor_spl::token::Transfer;
 use anchor_spl::token;
@@ -101,36 +99,29 @@ pub mod evenswap {
 
     pub fn swap(ctx: Context<Swap>, my_nft_mint: Pubkey, want_nft_mint: Pubkey) -> Result<()> {
         let user = &ctx.accounts.user;
-        let user_token_account_info = &ctx.accounts.user_token_account;
+        //let user_token_account_info = &ctx.accounts.user_token_account;
         let program_token_account_info = &ctx.accounts.program_token_account;
-        let counterparty_token_account_info = &ctx.accounts.counterparty_token_account;
-        let counterparty_nft_offer_account_info = &ctx.accounts.counterparty_nft_offer_account;
+        //let counterparty_token_account_info = &ctx.accounts.counterparty_token_account;
+        //let counterparty_nft_offer_account_info = &ctx.accounts.counterparty_nft_offer_account;
         
         // Just because I like to put want_nft_mint in the account data as well as a parameter
         require!(ctx.accounts.want_nft_mint.key() == want_nft_mint, ErrorCode::Unauthorized);
         
         // Ensure that the caller owns the offered NFT
-        require!(user_token_account_info.owner == *user.key, ErrorCode::Unauthorized);
+        require!(ctx.accounts.sent_token_account.owner == *user.key, ErrorCode::Unauthorized);
 
         // Ensure that the program owns the wanted NFT
-        require!(program_token_account_info.owner == *ctx.accounts.program_account.key, ErrorCode::Unauthorized);
+        require!(program_token_account_info.owner == ctx.accounts.counterparty_nft_offer_account.key(), ErrorCode::Unauthorized);
         require!(program_token_account_info.mint == want_nft_mint, ErrorCode::Unauthorized);
 
         // Ensure that there is an offer for the wanted NFT
-        require!(counterparty_nft_offer_account_info.want_nft_mints.contains(&my_nft_mint), ErrorCode::OfferNotFound);
-
-        // Close the account and refund the lamports to the <see next line>
-        // Transfer all lamports to the user (this should be the counterparty, not the user, but for simplicity's sake we'll do this for now !!!)
-        // The Anchor framework handles the transfer as specified by `close = user`
-        ctx.accounts.counterparty_nft_offer_account.close(ctx.accounts.user.to_account_info())?;
-        // Zero out the account data
-        *counterparty_nft_offer_account_info.to_account_info().data.borrow_mut() = &mut [];
+        require!(ctx.accounts.counterparty_nft_offer_account.want_nft_mints.contains(&my_nft_mint), ErrorCode::OfferNotFound);
 
         // Transfer user's NFT to counterparty
         {
             let cpi_accounts = Transfer {
-                from: user_token_account_info.to_account_info(),
-                to: counterparty_token_account_info.to_account_info(),
+                from: ctx.accounts.sent_token_account.to_account_info(),
+                to: ctx.accounts.sent_token_destination_account.to_account_info(),
                 authority: user.to_account_info(),
             };
             let cpi_program = ctx.accounts.token_program.to_account_info();
@@ -141,14 +132,30 @@ pub mod evenswap {
         // Transfer wanted NFT from program to user
         {
             let cpi_accounts = Transfer {
-                from: program_token_account_info.to_account_info(),
-                to: user_token_account_info.to_account_info(),
-                authority: ctx.accounts.program_account.to_account_info(),
+                from: ctx.accounts.program_token_account.to_account_info(),
+                to: ctx.accounts.received_token_account.to_account_info(),
+                authority: ctx.accounts.counterparty_nft_offer_account.to_account_info(),
             };
+            // Create the PDA account's seeds
+            let want_nft_mint_key = want_nft_mint.key();
+            let seeds = &[
+                b"nft_offer",
+                want_nft_mint_key.as_ref(),
+                &[ctx.bumps.counterparty_nft_offer_account],
+            ];
+            let signer = &[&seeds[..]];
+            // Complete the transfer
             let cpi_program = ctx.accounts.token_program.to_account_info();
-            let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+            let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
             token::transfer(cpi_ctx, 1)?; // Assuming NFTs have a quantity of 1
         }
+
+        // Close the account and refund the lamports to the <see next line>
+        // Transfer all lamports to the user (this should be the counterparty, not the user, but for simplicity's sake we'll do this for now !!!)
+        // The Anchor framework handles the transfer as specified by `close = user`
+        ctx.accounts.counterparty_nft_offer_account.close(ctx.accounts.user.to_account_info())?;
+        // Zero out the account data
+        *ctx.accounts.counterparty_nft_offer_account.to_account_info().data.borrow_mut() = &mut [];
 
         Ok(())
     }
@@ -233,13 +240,16 @@ pub struct Swap<'info> {
     pub counterparty_nft_offer_account: Account<'info, NftOfferAccount>,
 
     #[account(mut)]
-    pub user_token_account: Account<'info, TokenAccount>,
+    pub sent_token_account: Account<'info, TokenAccount>,
+
+    #[account(mut)]
+    pub sent_token_destination_account: Account<'info, TokenAccount>,
 
     #[account(mut)]
     pub program_token_account: Account<'info, TokenAccount>,
 
     #[account(mut)]
-    pub counterparty_token_account: Account<'info, TokenAccount>,
+    pub received_token_account: Account<'info, TokenAccount>,
 
     #[account(mut)]
     pub user: Signer<'info>,
