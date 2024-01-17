@@ -33,7 +33,7 @@ pub mod evenswap {
         require!(want_nft_mints.len() <= 10, ErrorCode::TooManyNfts);
 
         // Ensure that the offer did not already exist
-        require!(nft_offer_account.to_account_info().lamports() == 0, ErrorCode::OfferAlreadyExists);
+        // "init" already takes care of this: require!(nft_offer_account.to_account_info().lamports() == 0, ErrorCode::OfferAlreadyExists);
 
         // Transfer NFT to program
         let cpi_accounts = Transfer {

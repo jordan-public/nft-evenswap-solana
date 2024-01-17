@@ -5,6 +5,8 @@ import { Transaction, PublicKey, SystemProgram } from "@solana/web3.js";
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo, createSetAuthorityInstruction, AuthorityType, getAccount, getMint, Token, TOKEN_PROGRAM_ID, MintLayout } from "@solana/spl-token";
 import { Evenswap } from "../target/types/evenswap";
 
+const PROGRAM_ID = new PublicKey("9ABW8EsLa5Muc5a8aKNvi6TDytHDRd9gwx8RqiF1Vfp7");
+
 async function createNFT(connection: anchor.Provider.Connection, creator: anchor.web3.Keypair, recipient: andchor.web3.Keypair) {
   // Create a new mint
   const mint = await createMint(
@@ -46,6 +48,7 @@ async function createNFT(connection: anchor.Provider.Connection, creator: anchor
   //     mint
   //   );
   // console.log("Mint info:", mintInfo);
+  return mint
 }
 
 describe("evenswap", () => {
@@ -89,28 +92,41 @@ describe("evenswap", () => {
   
     await createNFT(provider.connection, nftCreator, interestingNftsHolder);
 
-    // Mint 3 NFTs for interestingNftsHolder and 1 for the swapOfferer
+    // Mint 3 NFTs for interestingNftsHolder
     const interestingNftMints = await Promise.all([
       createNFT(provider.connection, nftCreator, interestingNftsHolder),
       createNFT(provider.connection, nftCreator, interestingNftsHolder),
       createNFT(provider.connection, nftCreator, interestingNftsHolder),
-      createNFT(provider.connection, nftCreator, swapOfferer),
     ]);
+    // Mint 1 NFT for swapOfferer
+    const swapOffererNftMint = await createNFT(provider.connection, nftCreator, swapOfferer);
 
-    // // Now, call the swap_offer function on your program
-    // // You need to pass the correct accounts and parameters as required by your program
-    // // This is just a placeholder and needs to be replaced with actual implementation
-    // const tx = await program.methods.swapOffer(swapOffererNftMint, interestingNftMints).accounts({
-    //   // List of accounts goes here
-    //   // user: swapOfferer.publicKey,
-    //   // myNftMint: swapOffererNftMint,
-    //   // wantNftMints: interestingNftMints,
-    //   // ... other necessary accounts ...
-    // }).signers([swapOfferer]).rpc();
-    // console.log("Swap offer transaction signature", tx);
+    // Prepare the accounts for the swap_offer function
+    const program_token_account = (await getOrCreateAssociatedTokenAccount(provider.connection, nftCreator, swapOffererNftMint, PROGRAM_ID)).address;
+    const user_token_account = (await getOrCreateAssociatedTokenAccount(provider.connection, nftCreator, swapOffererNftMint, swapOfferer.publicKey)).address;
+    const nft_offer_account = (await PublicKey.findProgramAddress(
+      [Buffer.from("nft_offer"), swapOffererNftMint.toBuffer()],
+      PROGRAM_ID
+    ))[0];
 
-    // // Add assertions here to check the state after the swap offer
-    // // For example, you might want to check the ownership of the NFTs, the state of the offer, etc.
+    // Now, call the swap_offer function on your program
+    // You need to pass the correct accounts and parameters as required by your program
+    // This is just a placeholder and needs to be replaced with actual implementation
+    const tx = await program.methods.swapOffer(swapOffererNftMint, interestingNftMints).accounts({
+      // List of accounts:
+      myNftMint: swapOffererNftMint,
+      nftOfferAccount: nft_offer_account,
+      userTokenAccount: user_token_account,
+      programTokenAccount: program_token_account,
+      user: swapOfferer.publicKey,
+      programAccount: PROGRAM_ID,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+    }).signers([swapOfferer]).rpc();
+    console.log("Swap offer transaction signature", tx);
+
+    // Add assertions here to check the state after the swap offer
+    // For example, you might want to check the ownership of the NFTs, the state of the offer, etc.
   });
 
   it("Handles cancelling offers", async () => {
