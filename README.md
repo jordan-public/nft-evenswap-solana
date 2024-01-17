@@ -6,18 +6,37 @@
 - Install Gitpod extension in the above
 - In the browser go to [the Gitpod instance](https://gitpod.io/#github.com/jordan-public/nft-evenswap-solana) to start/open it. It will run very slowly the first time, but then next time around it will be ok.
 
+---
+
 ##  Build and deploy
 
 To build the project, at the project root run:
 ```shell
 anchor build
 ```
+---
 
 To test the project, at the project root run:
 ```shell
 anchor test
 ```
 
+To test the project against the separate Solana Test Validator or any other Solana Validator, configure the validator connection in ```Anchor.toml``` and then run the test as follows:
+```shell
+anchor test --skip-local-validator
+```
+
+For example, to run the test against the locally started Solana Test Validator, in one shell tun the validator:
+```shell
+solana-test-validator
+```
+
+Then without any changes to ```Anchor.toml``` in another shell, from the root of the project, run:
+```shell
+anchor test --skip-local-validator
+```
+
+---
 To deploy the project to the local test node, first run the solana test node:
 
 Then, at the project root run:
@@ -33,11 +52,13 @@ To deploy it to devnet, at the project root run:
 ```shell
 solana program deploy target/deploy/evenswap.so -u devnet
 ```
-
+---
 
 ## Demo
 
 TBD
+
+---
 
 ## Introduction
 
