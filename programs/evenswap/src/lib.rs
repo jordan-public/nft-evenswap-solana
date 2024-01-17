@@ -19,8 +19,9 @@ pub mod evenswap {
         // Just because I like to put my_nft_mint in the account data as well as a parameter
         require!(ctx.accounts.my_nft_mint.key() == my_nft_mint, ErrorCode::Unauthorized);
         
-        // Ensure that the caller owns the offered NFT
+        // Ensure that the caller owns the offered NFT account
         require!(ctx.accounts.user_token_account.owner == *ctx.accounts.user.key, ErrorCode::Unauthorized);
+        // Also, transfer would fail if the user didn't own the NFT
 
         // Ensure the provided want_nft_mints vector isn't too large
         require!(want_nft_mints.len() <= 10, ErrorCode::TooManyNfts);
@@ -60,6 +61,8 @@ pub mod evenswap {
         // Ensure that the owner of the offer is the one cancelling it
         require!(ctx.accounts.nft_offer_account.owner == *ctx.accounts.user.key, ErrorCode::Unauthorized);
 
+        // Transfer would fail if the user didn't own the NFT
+
         // Transfer NFT to user
         let cpi_accounts = Transfer {
             from: ctx.accounts.program_token_account.to_account_info(),
@@ -92,12 +95,16 @@ pub mod evenswap {
         // Just because I like to put want_nft_mint in the account data as well as a parameter
         require!(ctx.accounts.want_nft_mint.key() == want_nft_mint, ErrorCode::Unauthorized);
         
-        // Ensure that the caller owns the offered NFT
+        // Ensure that the caller owns the offered NFT account
         require!(ctx.accounts.sent_token_account.owner == *ctx.accounts.user.key, ErrorCode::Unauthorized);
 
-        // Ensure that the program owns the wanted NFT
+        // Ensure that the program owns the wanted NFT account
         require!(ctx.accounts.program_token_account.owner == ctx.accounts.counterparty_nft_offer_account.key(), ErrorCode::Unauthorized);
+        // Ensure that the account corresponds to the wanted NFT
         require!(ctx.accounts.program_token_account.mint == want_nft_mint, ErrorCode::Unauthorized);
+        // Also transfer we would fail if the program didn't own the NFT to be received
+        
+        // Also transfer would fail if the user didn't own the NFT to be sent
 
         // Ensure that there is an offer for the wanted NFT
         require!(ctx.accounts.counterparty_nft_offer_account.want_nft_mints.contains(&my_nft_mint), ErrorCode::OfferNotFound);
