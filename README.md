@@ -1,5 +1,11 @@
 # NFT EvenSwap
 
+## Demo
+
+See video presentation [here](./demo/README.md).
+
+---
+
 ## Development environment setup
 
 - Install Visual Studio Code
@@ -52,12 +58,6 @@ To deploy it to devnet, at the project root run:
 ```shell
 solana program deploy target/deploy/evenswap.so -u devnet
 ```
----
-
-## Demo
-
-TBD
-
 ---
 
 ## Introduction
