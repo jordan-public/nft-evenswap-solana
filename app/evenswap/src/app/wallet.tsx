@@ -10,6 +10,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import dynamic from 'next/dynamic';
 import {CreateNFT} from "@/app/nft";
 import {NFTMinter} from "@/app/nft2";
+import {NFTMinter3} from "@/app/nft3";
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -57,8 +58,8 @@ export const Wallet: FC = () => {
                     <WalletMultiButtonDynamic />
                     <WalletDisconnectButtonDynamic />
                     { /* Your app's components go here, nested within the context providers. */ }
-                    TEST
-                    <NFTMinter></NFTMinter>
+                    <div></div>
+                    <NFTMinter3></NFTMinter3>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
